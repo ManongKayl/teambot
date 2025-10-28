@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS it414_db_teambot;
+USE it414_db_teambot;
+
 CREATE TABLE rfid_logs (
     time_log DATETIME NOT NULL,
     rfid_data VARCHAR(255) NOT NULL,

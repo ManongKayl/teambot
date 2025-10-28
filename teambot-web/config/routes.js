@@ -33,5 +33,10 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
+  // RFID Log API Routes
+  'GET /api/rfid-logs': 'RfidLogController.find',
+  'GET /api/rfid-logs/by-data/:rfid_data': 'RfidLogController.findByRfidData',
+  'GET /api/rfid-logs/by-status/:status': 'RfidLogController.findByStatus',
+
 
 };

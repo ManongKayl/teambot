@@ -37,64 +37,103 @@
   </div>
 
   <script>
-    // Placeholder for future database integration
-    // This function will fetch and display RFID data
+    // Trying to fetch RFID data from the backend API
+    // Using async/await because fetch returns a promise
     async function loadRFIDData() {
       try {
-        // TODO: Replace with actual API endpoint
-        // const response = await fetch('/api/rfid');
-        // const data = await response.json();
-        // displayRFIDData(data);
+        // Making a GET request to our API endpoint
+        const response = await fetch('/api/rfid-logs');
+        const result = await response.json();
         
-        console.log('Ready to load RFID data from database');
+        // Check if we got data successfully
+        if (result.success && result.data) {
+          displayRFIDData(result.data);
+        } else {
+          console.error('Failed to load RFID data');
+        }
       } catch (error) {
+        // If something goes wrong (like server is down), show error message
         console.error('Error loading RFID data:', error);
+        const tbody = document.getElementById('rfid-data');
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty-state">
+              <h3>Error Loading Data</h3>
+              <p>Failed to connect to the database. Please check your connection.</p>
+            </td>
+          </tr>
+        `;
       }
     }
 
-    // Function to display RFID data in the table
+    // This function takes the data and puts it in the HTML table
     function displayRFIDData(data) {
       const tbody = document.getElementById('rfid-data');
       
+      // If there's no data, show a message
       if (!data || data.length === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="4" class="empty-state">
               <h3>No Data Available</h3>
-              <p>No RFID records found.</p>
+              <p>No RFID records found in the database.</p>
             </td>
           </tr>
         `;
         return;
       }
 
+      // Loop through each record and create table rows
       tbody.innerHTML = data.map((item, index) => {
-        let statusClass = '';
-        let statusText = item.status;
+        // Figure out the color based on status
+        // If rfid_status is true (1), use green. If false (0), use red
+        const statusClass = item.rfid_status ? 'status-found' : 'status-not-found';
+        const statusText = item.rfid_status ? '1' : '0';
         
-        // Determine status styling
-        if (item.status === 'RFID NOT FOUND') {
-          statusClass = 'status-not-found';
-        } else if (item.status === '1' || item.status === '0') {
-          statusClass = 'status-number';
-        } else {
-          statusClass = 'status-found';
-        }
+        // Converting the datetime to GMT+8 with AM/PM format
+        // Had to look up how to do timezone conversion in JavaScript
+        const date = new Date(item.time_log);
+        
+        // Getting the date part first (MM/DD/YYYY)
+        const dateStr = date.toLocaleDateString('en-US', {
+          timeZone: 'Asia/Taipei',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        
+        // Then the time part with AM/PM
+        // Setting hour12 to true to get AM/PM instead of 24-hour format
+        const timeStr = date.toLocaleTimeString('en-US', {
+          timeZone: 'Asia/Taipei',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        });
+        
+        // Combining date and time
+        const datetime = `${dateStr}, ${timeStr}`;
 
+        // Creating the HTML for each row
         return `
           <tr>
             <td>${index + 1}.</td>
-            <td class="rfid-cell">${item.rfid}</td>
+            <td class="rfid-cell">${item.rfid_data}</td>
             <td class="${statusClass}">${statusText}</td>
-            <td class="datetime-cell">${item.datetime}</td>
+            <td class="datetime-cell">${datetime}</td>
           </tr>
         `;
       }).join('');
     }
 
-    // Initialize when page loads
+    // Run this when the page finishes loading
     document.addEventListener('DOMContentLoaded', () => {
       loadRFIDData();
+      
+      // Refresh the data every 5 seconds to show real-time updates
+      // Using setInterval to call loadRFIDData repeatedly
+      setInterval(loadRFIDData, 5000);
     });
   </script>
 </body>

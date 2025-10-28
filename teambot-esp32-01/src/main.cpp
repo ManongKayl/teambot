@@ -15,7 +15,7 @@ void sendToServer(String rfidData);
 const char* ssid = "Testing Area";
 const char* password = "Kyukken2020!";
 
-// PHP server URL (UPDATE THIS WITH YOUR SERVER URL)
+// PHP server URL 
 const char* serverUrl = "http://192.168.1.7/rfid_handler.php";
 
 // Create MFRC522 instance
