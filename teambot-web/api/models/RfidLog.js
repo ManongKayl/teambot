@@ -13,7 +13,6 @@ module.exports = {
     // Had to match these exactly with the database schema
 
     // time_log - stores when the RFID was scanned
-    // Using 'string' type because datetime can be tricky with Sails
     time_log: {
       type: 'string',
       columnType: 'datetime',
@@ -28,10 +27,10 @@ module.exports = {
     },
 
     // rfid_status - whether the scan was successful (1) or not (0)
-    // Database stores this as boolean/tinyint
+    // Database stores this as TINYINT(1)
     rfid_status: {
-      type: 'boolean',
-      columnType: 'boolean',
+      type: 'number',
+      columnType: 'tinyint(1)',
       required: true
     },
 

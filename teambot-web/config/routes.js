@@ -37,6 +37,8 @@ module.exports.routes = {
   'GET /api/rfid-logs': 'RfidLogController.find',
   'GET /api/rfid-logs/by-data/:rfid_data': 'RfidLogController.findByRfidData',
   'GET /api/rfid-logs/by-status/:status': 'RfidLogController.findByStatus',
+  'GET /api/rfid-reg': 'RfidRegController.find',
+  'PATCH /api/rfid-reg/:id': 'RfidRegController.update',
 
 
 };

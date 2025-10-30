@@ -85,16 +85,25 @@ module.exports = {
       const status = req.param('status');
 
       // Check if status was provided
-      if (status === undefined) {
+      if (status === undefined || status === null) {
         return res.badRequest({
           success: false,
           message: 'status parameter is required'
         });
       }
 
-      // Converting the status to boolean - took me a while to figure this out!
-      // If it's the string 'true' or actual boolean true, set to true
-      const boolStatus = status === 'true' || status === true;
+      // Converting the status to boolean - handle '1', '0', 'true', 'false'
+      let boolStatus;
+      if (status === 'true' || status === '1' || status === true || status === 1) {
+        boolStatus = true;
+      } else if (status === 'false' || status === '0' || status === false || status === 0) {
+        boolStatus = false;
+      } else {
+        return res.badRequest({
+          success: false,
+          message: 'Invalid status value. Use 1/0 or true/false.'
+        });
+      }
 
       // Query the database with the boolean value
       const logs = await RfidLog.find({ rfid_status: boolStatus });
