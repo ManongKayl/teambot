@@ -27,12 +27,12 @@ module.exports = {
       required: true
     },
 
-    // rfid_status - whether the scan was successful (1) or not (0)
-    // Database stores this as boolean/tinyint
+    // rfid_status - whether the scan was successful (1) or not (0), or NULL for not found
+    // Database stores this as boolean/tinyint, but can be NULL
     rfid_status: {
       type: 'boolean',
       columnType: 'boolean',
-      required: true
+      allowNull: true
     },
 
   },

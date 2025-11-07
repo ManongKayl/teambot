@@ -4,7 +4,7 @@ USE it414_db_teambot;
 CREATE TABLE rfid_logs (
     time_log DATETIME NOT NULL,
     rfid_data VARCHAR(255) NOT NULL,
-    rfid_status BOOLEAN NOT NULL
+    rfid_status BOOLEAN
 );
 
 CREATE TABLE rfid_reg (
