@@ -21,10 +21,10 @@ module.exports = {
       unique: true
     },
 
-    // rfid_status - whether this RFID is currently active/authorized (stored as TINYINT(1) in MySQL)
+    // rfid_status - whether this RFID is currently active/authorized
     rfid_status: {
-      type: 'number',
-      columnType: 'tinyint(1)',
+      type: 'boolean',
+      columnType: 'boolean',
       required: true
     },
 

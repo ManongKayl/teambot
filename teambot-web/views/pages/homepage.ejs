@@ -1,14 +1,8 @@
-<!-- RFID Tracking System - IT414 Team Project -->
-<!-- Created by: TeamBot Development Team -->
-<!-- This is our final project for IT414 - Web Development -->
-<!-- We spent weeks figuring out how to connect the RFID hardware to this web interface -->
-<!-- Hopefully this works! -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RFID Tracking System</title>
   <link rel="stylesheet" href="/styles/custom.css">
 </head>
@@ -19,104 +13,97 @@
       <p>Real-time RFID monitoring and status tracking</p>
     </header>
 
-    <div class="content-layout">
-      <aside class="rfid-sidebar">
-        <div class="sidebar-header">
-          <h2>RFID</h2>
-          <p>Registered tags</p>
-        </div>
-        <ul id="rfid-register" class="rfid-list">
-          <li class="rfid-list-message">
-            <h3>No Registered Cards</h3>
-            <p>Registered RFID cards will appear here.</p>
-          </li>
-        </ul>
-      </aside>
-
-      <div class="table-container">
-        <div class="table-header">
-          <h2>RFID Logs</h2>
-        </div>
-        <table id="rfid-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>RFID</th>
-              <th>Status</th>
-              <th>Date & Time</th>
-            </tr>
-          </thead>
-          <tbody id="rfid-data">
-            <!-- Data will be populated here from database -->
-            <tr>
-              <td colspan="4" class="empty-state">
-                <h3>No Data Available</h3>
-                <p>RFID tracking data will appear here once the database is connected.</p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="table-container">
+      <table id="rfid-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>RFID</th>
+            <th>Status</th>
+            <th>Date & Time</th>
+          </tr>
+        </thead>
+        <tbody id="rfid-data">
+          <!-- Data will be populated here from database -->
+          <tr>
+            <td colspan="4" class="empty-state">
+              <h3>No Data Available</h3>
+              <p>RFID tracking data will appear here once the database is connected.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
   <script>
-    async function loadData() {
+    // Trying to fetch RFID data from the backend API
+    // Using async/await because fetch returns a promise
+    async function loadRFIDData() {
       try {
-        const [logsResponse, registerResponse] = await Promise.all([
-          fetch('/api/rfid-logs'),
-          fetch('/api/rfid-reg')
-        ]);
-
-        if (!logsResponse.ok || !registerResponse.ok) {
-          throw new Error('Request failed');
-        }
-
-        const [logsResult, registerResult] = await Promise.all([
-          logsResponse.json(),
-          registerResponse.json()
-        ]);
-
-        if (logsResult.success && Array.isArray(logsResult.data)) {
-          displayRFIDLogs(logsResult.data);
+        // Making a GET request to our API endpoint
+        const response = await fetch('/api/rfid-logs');
+        const result = await response.json();
+        
+        // Check if we got data successfully
+        if (result.success && result.data) {
+          displayRFIDData(result.data);
         } else {
-          showLogsMessage('No Data Available', 'No RFID records found in the database.');
-        }
-
-        if (registerResult.success && Array.isArray(registerResult.data)) {
-          displayRegisteredRFIDs(registerResult.data);
-        } else {
-          showRegisteredMessage('No Registered Cards', 'No RFID cards are registered yet.');
+          console.error('Failed to load RFID data');
         }
       } catch (error) {
+        // If something goes wrong (like server is down), show error message
         console.error('Error loading RFID data:', error);
-        showLogsMessage('Error Loading Data', 'Failed to connect to the database. Please check your connection.');
-        showRegisteredMessage('Error Loading Data', 'Failed to connect to the database. Please check your connection.');
+        const tbody = document.getElementById('rfid-data');
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty-state">
+              <h3>Error Loading Data</h3>
+              <p>Failed to connect to the database. Please check your connection.</p>
+            </td>
+          </tr>
+        `;
       }
     }
 
-    function displayRFIDLogs(data) {
+    // This function takes the data and puts it in the HTML table
+    function displayRFIDData(data) {
       const tbody = document.getElementById('rfid-data');
-
+      
+      // If there's no data, show a message
       if (!data || data.length === 0) {
-        showLogsMessage('No Data Available', 'No RFID records found in the database.');
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty-state">
+              <h3>No Data Available</h3>
+              <p>No RFID records found in the database.</p>
+            </td>
+          </tr>
+        `;
         return;
       }
 
+      // Loop through each record and create table rows
       tbody.innerHTML = data.map((item, index) => {
-        const isActive = item.rfid_status === 1 || item.rfid_status === '1';
-        const statusClass = isActive ? 'status-found' : 'status-not-found';
-        const statusText = isActive ? '1' : '0';
-
+        // Figure out the color based on status
+        // If rfid_status is true (1), use green. If false (0), use red
+        const statusClass = item.rfid_status ? 'status-found' : 'status-not-found';
+        const statusText = item.rfid_status ? '1' : '0';
+        
+        // Converting the datetime to GMT+8 with AM/PM format
+        // Had to look up how to do timezone conversion in JavaScript
         const date = new Date(item.time_log);
-
+        
+        // Getting the date part first (MM/DD/YYYY)
         const dateStr = date.toLocaleDateString('en-US', {
           timeZone: 'Asia/Taipei',
           year: 'numeric',
           month: '2-digit',
           day: '2-digit'
         });
-
+        
+        // Then the time part with AM/PM
+        // Setting hour12 to true to get AM/PM instead of 24-hour format
         const timeStr = date.toLocaleTimeString('en-US', {
           timeZone: 'Asia/Taipei',
           hour: '2-digit',
@@ -124,9 +111,11 @@
           second: '2-digit',
           hour12: true
         });
-
+        
+        // Combining date and time
         const datetime = `${dateStr}, ${timeStr}`;
 
+        // Creating the HTML for each row
         return `
           <tr>
             <td>${index + 1}.</td>
@@ -138,91 +127,13 @@
       }).join('');
     }
 
-    function displayRegisteredRFIDs(data) {
-      const list = document.getElementById('rfid-register');
-
-      if (!data || data.length === 0) {
-        showRegisteredMessage('No Registered Cards', 'Registered RFID cards will appear here.');
-        return;
-      }
-
-      list.innerHTML = data.map((item, index) => {
-        const isActive = item.rfid_status === 1 || item.rfid_status === '1';
-        const indicatorClass = isActive ? 'rfid-toggle-btn rfid-toggle--active' : 'rfid-toggle-btn';
-        const statusLabel = isActive ? 'Active (Click to deactivate)' : 'Inactive (Click to activate)';
-
-        return `
-          <li class="rfid-list-item">
-            <span class="rfid-index">${index + 1}.</span>
-            <span class="rfid-code">${item.rfid_data}</span>
-            <button class="rfid-toggle-btn ${indicatorClass}" data-rfid="${item.rfid_data}" data-status="${item.rfid_status}" title="${statusLabel}" aria-label="${statusLabel}">
-              <span class="rfid-toggle__segment"></span>
-              <span class="rfid-toggle__segment"></span>
-            </button>
-          </li>
-        `;
-      }).join('');
-    }
-
-    function showLogsMessage(title, description) {
-      const tbody = document.getElementById('rfid-data');
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="4" class="empty-state">
-            <h3>${title}</h3>
-            <p>${description}</p>
-          </td>
-        </tr>
-      `;
-    }
-
-    function showRegisteredMessage(title, description) {
-      const list = document.getElementById('rfid-register');
-      list.innerHTML = `
-        <li class="rfid-list-message">
-          <h3>${title}</h3>
-          <p>${description}</p>
-        </li>
-      `;
-    }
-
-    async function toggleRfidStatus(rfidData, currentStatus) {
-      try {
-        const newStatus = !currentStatus;
-        const response = await fetch(`/api/rfid-reg/${rfidData}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ rfid_status: newStatus })
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to update RFID status');
-        }
-
-        // Reload data after successful update
-        loadData();
-      } catch (error) {
-        console.error('Error toggling RFID status:', error);
-        alert('Failed to update RFID status. Please try again.');
-      }
-    }
-
+    // Run this when the page finishes loading
     document.addEventListener('DOMContentLoaded', () => {
-      loadData();
-      setInterval(loadData, 5000);
-
-      // Add event listeners for RFID toggle buttons
-      document.addEventListener('click', (event) => {
-        if (event.target.closest('.rfid-toggle-btn')) {
-          const button = event.target.closest('.rfid-toggle-btn');
-          const rfidData = button.getAttribute('data-rfid');
-          const currentStatus = parseInt(button.getAttribute('data-status')) === 1;
-
-          toggleRfidStatus(rfidData, currentStatus);
-        }
-      });
+      loadRFIDData();
+      
+      // Refresh the data every 5 seconds to show real-time updates
+      // Using setInterval to call loadRFIDData repeatedly
+      setInterval(loadRFIDData, 5000);
     });
   </script>
 </body>
