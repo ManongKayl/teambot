@@ -136,7 +136,7 @@ void reconnectMQTT() {
     if (!mqttConnected) {
       Serial.print("Attempting MQTT connection...");
     }
-    if (client.connect("ESP32Client")) {
+    if (client.connect("TeamBot-esp32-01")) {
       if (!mqttConnected) {
         Serial.println("connected");
         mqttConnected = true;
@@ -184,8 +184,8 @@ void sendToServer(String rfidData) {
         Serial.println("Status: RFID NOT FOUND");
         // Publish rfid_status to MQTT
         if (client.connected()) {
-          client.publish(mqttTopic, "NULL");
-          Serial.println("Published NULL to MQTT");
+          client.publish(mqttTopic, "-1");
+          Serial.println("Published -1 to MQTT");
         } else {
           Serial.println("MQTT not connected, cannot publish");
         }

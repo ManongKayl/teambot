@@ -19,4 +19,15 @@ module.exports.custom = {
   // stripeSecret: 'sk_test_Zzd814nldl91104qor5911gjald',
   // …
 
+  // MQTT Configuration
+  mqtt: {
+    host: process.env.MQTT_HOST || '192.168.1.7',
+    port: process.env.MQTT_PORT || 1883,
+    topic: process.env.MQTT_TOPIC || 'RFID_LOGIN',
+    clientId: process.env.MQTT_CLIENT_ID || 'MQTT_TeamBot',
+    username: process.env.MQTT_USERNAME,
+    password: process.env.MQTT_PASSWORD,
+    debug: process.env.MQTT_DEBUG || false
+  }
+
 };

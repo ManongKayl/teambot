@@ -11,6 +11,14 @@
 
 module.exports.bootstrap = async function() {
 
+  // Initialize MQTT service
+  try {
+    MqttService.init();
+    sails.log.info('MQTT service initialized successfully');
+  } catch (err) {
+    sails.log.error('Failed to initialize MQTT service:', err.message);
+  }
+
   // By convention, this is a good place to set up fake data during development.
   //
   // For example:

@@ -23,6 +23,10 @@
      <header>
        <h1>RFID Tracking System</h1>
        <p>Real-time RFID monitoring and status tracking</p>
+       <div class="header-controls">
+         <button id="test-mqtt-btn" class="test-btn" onclick="testMQTT()">Test MQTT Connection</button>
+         <div id="mqtt-status" class="mqtt-status">MQTT: Connecting...</div>
+       </div>
      </header>
 
      <div class="table-container">
@@ -251,10 +255,100 @@
       });
     }
 
+    // Function to update MQTT status display
+    async function updateMqttStatus() {
+      try {
+        const response = await fetch('/api/mqtt/status');
+        const result = await response.json();
+
+        if (result.success) {
+          const status = result.status;
+          const statusEl = document.getElementById('mqtt-status');
+
+          let statusText, statusClass;
+          switch (status.status) {
+            case 'connected':
+              statusText = 'MQTT: ✓ Connected';
+              statusClass = 'mqtt-status success';
+              break;
+            case 'connecting':
+              statusText = 'MQTT: Connecting...';
+              statusClass = 'mqtt-status testing';
+              break;
+            case 'error':
+              statusText = 'MQTT: ✗ Error';
+              statusClass = 'mqtt-status error';
+              break;
+            default:
+              statusText = 'MQTT: Disconnected';
+              statusClass = 'mqtt-status error';
+          }
+
+          statusEl.textContent = statusText;
+          statusEl.className = statusClass;
+        }
+      } catch (error) {
+        console.error('Error updating MQTT status:', error);
+        const statusEl = document.getElementById('mqtt-status');
+        statusEl.textContent = 'MQTT: Status unknown';
+        statusEl.className = 'mqtt-status error';
+      }
+    }
+
+    // Function to test MQTT connection
+    async function testMQTT() {
+      const btn = document.getElementById('test-mqtt-btn');
+      const status = document.getElementById('mqtt-status');
+
+      // Disable button and show testing
+      btn.disabled = true;
+      btn.textContent = 'Testing...';
+      status.textContent = 'MQTT: Testing...';
+      status.className = 'mqtt-status testing';
+
+      try {
+        const testMessage = `test_${Date.now()}`;
+        const response = await fetch('/api/rfid-logs/test-mqtt', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: testMessage
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          status.textContent = 'MQTT: ✓ Test sent';
+          status.className = 'mqtt-status success';
+          console.log('MQTT test successful:', result);
+        } else {
+          status.textContent = 'MQTT: ✗ Test failed';
+          status.className = 'mqtt-status error';
+          console.error('MQTT test failed:', result);
+        }
+      } catch (error) {
+        status.textContent = 'MQTT: ✗ Connection error';
+        status.className = 'mqtt-status error';
+        console.error('Error testing MQTT:', error);
+      }
+
+      // Re-enable button after 3 seconds
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Test MQTT Connection';
+        // Refresh status after test
+        updateMqttStatus();
+      }, 3000);
+    }
+
     // Run this when the page finishes loading
     document.addEventListener('DOMContentLoaded', () => {
       loadRegisteredRFIDs();
       loadRFIDData();
+      updateMqttStatus();
 
       // Refresh the data every 5 seconds to show real-time updates
       // Using setInterval to call loadRFIDData repeatedly
@@ -265,6 +359,9 @@
 
       // Also sync switches every 2 seconds to catch any external changes
       setInterval(syncSwitchStates, 2000);
+
+      // Update MQTT status every 10 seconds
+      setInterval(updateMqttStatus, 10000);
     });
   </script>
 </body>

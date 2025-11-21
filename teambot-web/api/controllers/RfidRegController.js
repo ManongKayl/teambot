@@ -107,6 +107,9 @@ module.exports = {
         .set({ rfid_status: boolStatus });
 
       if (!updatedReg) {
+        // RFID not found - send -1 via MQTT
+        sails.log.info(`RFID ${rfidData} not found, publishing -1 via MQTT`);
+        MqttService.publish('-1');
         return res.notFound({
           success: false,
           message: 'RFID not found'
@@ -123,6 +126,11 @@ module.exports = {
         rfid_data: rfidData,
         rfid_status: boolStatus
       }).fetch();
+
+      // Publish MQTT message with status value (1 for active, 0 for inactive)
+      const mqttMessage = boolStatus ? '1' : '0';
+      sails.log.info(`Publishing RFID status change via MQTT: ${mqttMessage} for RFID ${rfidData}`);
+      MqttService.publish(mqttMessage);
 
       // Return success response
       return res.json({
