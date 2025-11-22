@@ -18,10 +18,10 @@ const char* ssid = "Testing Area";
 const char* password = "Kyukken2020!";
 
 // PHP server URL
-const char* serverUrl = "http://192.168.1.7/rfid_handler.php";
+const char* serverUrl = "http://10.133.214.124/rfid_handler.php";
 
 // MQTT broker details
-const char* mqttServer = "192.168.1.7";
+const char* mqttServer = "10.133.214.124";
 const int mqttPort = 1883;
 const char* mqttTopic = "RFID_LOGIN";
 

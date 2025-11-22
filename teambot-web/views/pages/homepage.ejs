@@ -4,7 +4,8 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
  <meta name="theme-color" content="#007bff">
- <title>RFID Tracking System</title>
+ <link rel="manifest" href="/manifest.json">
+ <title>RFID Logs</title>
  <link rel="stylesheet" href="/styles/custom.css">
 </head>
 <body>
@@ -21,8 +22,8 @@
  <div class="main-content">
    <div class="container">
      <header>
-       <h1>RFID Tracking System</h1>
-       <p>Real-time RFID monitoring and status tracking</p>
+       <h1>RFID Logs</h1>
+       <p>Real-time RFID logs and status tracking</p>
      </header>
 
      <div class="table-container">
@@ -359,6 +360,19 @@
       // Update MQTT status every 10 seconds
       setInterval(updateMqttStatus, 10000);
     });
+
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('Service Worker registered successfully:', registration);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
   </script>
 </body>
 </html>

@@ -11,6 +11,10 @@
 
 module.exports.bootstrap = async function() {
 
+  // Get host for mobile access from config
+  const host = sails.config.http.host;
+  sails.log.info(`Mobile access link: http://${host}:1337`);
+
   // Initialize MQTT service
   try {
     MqttService.init();

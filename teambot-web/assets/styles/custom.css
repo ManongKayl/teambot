@@ -1,4 +1,4 @@
-/* RFID Tracking System Styles */
+/* RFID Logs Styles */
 
 * {
   margin: 0;
@@ -220,12 +220,12 @@ tbody tr:last-child td {
     width: 100%;
     margin-right: 0;
     margin-bottom: 20px;
-    order: 2; /* Move sidebar below main content on mobile */
+    order: 1; /* Registered RFIDs first on mobile */
   }
 
   .main-content {
     width: 100%;
-    order: 1; /* Main content first on mobile */
+    order: 2; /* RFID Logs second on mobile */
   }
 
   .container {
@@ -294,25 +294,7 @@ tbody tr:last-child td {
 
   /* Touch-friendly switches */
   .switch {
-    width: 50px;
-    height: 26px;
     cursor: pointer;
-  }
-
-  .slider {
-    border-radius: 26px;
-  }
-
-  .slider:before {
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    border-radius: 50%;
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(24px);
   }
 
   /* Better button spacing for touch */
@@ -375,20 +357,7 @@ tbody tr:last-child td {
     font-size: 0.75em;
   }
 
-  /* Smaller switches for very small screens */
-  .switch {
-    width: 45px;
-    height: 24px;
-  }
-
-  .slider:before {
-    height: 18px;
-    width: 18px;
-  }
-
-  input:checked + .slider:before {
-    transform: translateX(21px);
-  }
+  /* Smaller switches for very small screens - removed size changes to keep normal switch */
 }
 
 /* Loading State */

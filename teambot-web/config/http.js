@@ -11,6 +11,8 @@
 
 module.exports.http = {
 
+  host: process.env.HOST || '10.133.214.124',
+
   /****************************************************************************
   *                                                                           *
   * Sails/Express middleware to run for every HTTP request.                   *
