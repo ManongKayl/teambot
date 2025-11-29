@@ -21,10 +21,10 @@ module.exports.custom = {
 
   // MQTT Configuration
   mqtt: {
-    host: process.env.MQTT_HOST || '10.133.214.124',
+    host: process.env.MQTT_HOST || '192.168.43.174',
     port: process.env.MQTT_PORT || 1883,
     topic: process.env.MQTT_TOPIC || 'RFID_LOGIN',
-    clientId: process.env.MQTT_CLIENT_ID || 'MQTT_TeamBot',
+    clientId: process.env.MQTT_CLIENT_ID || 'Web_TeamBot',
     username: process.env.MQTT_USERNAME,
     password: process.env.MQTT_PASSWORD,
     debug: process.env.MQTT_DEBUG || false
