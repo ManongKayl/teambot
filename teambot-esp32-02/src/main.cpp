@@ -43,10 +43,7 @@ void setup() {
 
     // Display startup banner
     Serial.println("\n\n=================================");
-    Serial.println("ESP32 MQTT Relay Controller");
-    Serial.println("IT414 FINAL PIT");
-    Serial.println("CW-020 Low Level Trigger Mode");
-    Serial.println("With Contact Pulse Workaround");
+    Serial.println("Teambot ESP32 Relay");
     Serial.println("=================================\n");
 
     // Initialize relay pin
@@ -106,9 +103,9 @@ void pulseRelayOn() {
     // Pulse the relay three times to ensure engagement
     for (int i = 0; i < 3; i++) {
         digitalWrite(RELAY_PIN, HIGH);
-        delay(30);
+        delay(50);
         digitalWrite(RELAY_PIN, LOW);
-        delay(30);
+        delay(50);
     }
 
     // Set relay to ON state
@@ -125,9 +122,9 @@ void pulseRelayOff() {
     // Pulse the relay three times to disengage
     for (int i = 0; i < 3; i++) {
         digitalWrite(RELAY_PIN, LOW);
-        delay(30);
+        delay(50);
         digitalWrite(RELAY_PIN, HIGH);
-        delay(30);
+        delay(50);
     }
 
     // Set relay to OFF state
@@ -172,7 +169,7 @@ void reconnectMQTT() {
         Serial.printf("MQTT attempt %d/5...\n", attempts + 1);
 
         // Generate unique client ID
-        String clientId = "ESP32_Relay_" + String(random(0xffff), HEX);
+        String clientId = "TeamBot_ESP32_02" + String(random(0xffff), HEX);
 
         if (mqttClient.connect(clientId.c_str())) {
             Serial.println("✓ MQTT Connected!");
