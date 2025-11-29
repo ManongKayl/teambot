@@ -36,7 +36,7 @@ PubSubClient client(espClient);
 // MQTT status tracking
 bool mqttConnected = false;
 
-// Ping timer
+// Ping timer mi
 unsigned long lastPingTime = 0;
 const unsigned long pingInterval = 30000; // 30 seconds
 
@@ -62,7 +62,7 @@ String getMQTTStateString(int state) {
 }
 
 void setup() {
-  // Initialize serial communication
+  // Dili ko kabalo ani, si koys na bahala ani.
   Serial.begin(115200);
   while (!Serial);
   
@@ -124,7 +124,7 @@ void setup() {
 
     // Setup MQTT
     client.setServer(mqttServer, mqttPort);
-    client.setKeepAlive(60);  // Increase keepalive to 60 seconds for better stability
+    client.setKeepAlive(60);  // minuto taga buhi haha
     client.setSocketTimeout(10);  // Set socket timeout to 10 seconds
     reconnectMQTT();
   } else {
@@ -192,7 +192,7 @@ void loop() {
     return;
   }
 
-  // Check MQTT connection
+  // Connection sa amobt ni
     if (!client.connected()) {
       if (mqttConnected) {
         Serial.println("MQTT connection lost!");
