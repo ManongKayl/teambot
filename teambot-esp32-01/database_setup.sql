@@ -1,3 +1,5 @@
+"Mao ning database setup gihmo"
+
 CREATE DATABASE IF NOT EXISTS it414_db_teambot;
 USE it414_db_teambot;
 
